@@ -59,6 +59,11 @@ export class VirtualFileSystem {
 
     // Check if file already exists
     if (this.files.has(normalized)) {
+      const existingNode = this.files.get(normalized);
+      if (existingNode && existingNode.type === "file") {
+        existingNode.content = content;
+        return existingNode;
+      }
       return null;
     }
 
@@ -419,11 +424,6 @@ export class VirtualFileSystem {
   }
 
   createFileWithParents(path: string, content: string = ""): string {
-    // Check if file already exists
-    if (this.exists(path)) {
-      return `Error: File already exists: ${path}`;
-    }
-
     // Create parent directories if they don't exist
     const parts = path.split("/").filter(Boolean);
     let currentPath = "";
