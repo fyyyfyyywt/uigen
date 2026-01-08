@@ -1,0 +1,31 @@
+services:
+  uigen-web:
+    container_name: uigen-web
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      # Pass these from your VPS environment or a .env file on the server
+      - GOOGLE_GENERATIVE_AI_API_KEY=${GOOGLE_GENERATIVE_AI_API_KEY}
+      - DATABASE_URL=file:/app/db/dev.db
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      # Persist the SQLite database
+      - ./db:/app/db
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:alpine
+    container_name: uigen-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:
