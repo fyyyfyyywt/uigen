@@ -76,17 +76,49 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
                             );
                           case "tool-invocation":
                             const tool = part.toolInvocation;
+                            let friendlyName = tool.toolName;
+                            
+                            if (tool.toolName === "str_replace_editor") {
+                              const args = tool.args as any;
+                              const fileName = args.path?.split('/').pop() || args.path || 'file';
+                              switch (args.command) {
+                                case "create":
+                                  friendlyName = `Creating ${fileName}`;
+                                  break;
+                                case "str_replace":
+                                  friendlyName = `Updating ${fileName}`;
+                                  break;
+                                case "insert":
+                                  friendlyName = `Modifying ${fileName}`;
+                                  break;
+                                case "view":
+                                  friendlyName = `Reading ${fileName}`;
+                                  break;
+                              }
+                            } else if (tool.toolName === "file_manager") {
+                              const args = tool.args as any;
+                              const fileName = args.path?.split('/').pop() || args.path || 'file';
+                              switch (args.command) {
+                                case "delete":
+                                  friendlyName = `Deleting ${fileName}`;
+                                  break;
+                                case "rename":
+                                  friendlyName = `Renaming ${fileName}`;
+                                  break;
+                              }
+                            }
+
                             return (
-                              <div key={partIndex} className="inline-flex items-center gap-2 mt-2 px-3 py-1.5 bg-neutral-50 rounded-lg text-xs font-mono border border-neutral-200">
+                              <div key={partIndex} className="inline-flex items-center gap-2 mt-2 px-3 py-1.5 bg-neutral-50 rounded-lg text-xs border border-neutral-200">
                                 {tool.state === "result" && tool.result ? (
                                   <>
                                     <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                                    <span className="text-neutral-700">{tool.toolName}</span>
+                                    <span className="text-neutral-700 font-medium">{friendlyName}</span>
                                   </>
                                 ) : (
                                   <>
                                     <Loader2 className="w-3 h-3 animate-spin text-blue-600" />
-                                    <span className="text-neutral-700">{tool.toolName}</span>
+                                    <span className="text-neutral-700 font-medium">{friendlyName}</span>
                                   </>
                                 )}
                               </div>
