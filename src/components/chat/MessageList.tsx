@@ -41,15 +41,15 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
                 </div>
               </div>
             )}
-            
+
             <div className={cn(
               "flex flex-col gap-2 max-w-[85%]",
               message.role === "user" ? "items-end" : "items-start"
             )}>
               <div className={cn(
                 "rounded-xl px-4 py-3",
-                message.role === "user" 
-                  ? "bg-blue-600 text-white shadow-sm" 
+                message.role === "user"
+                  ? "bg-blue-600 text-white shadow-sm"
                   : "bg-white text-neutral-900 border border-neutral-200 shadow-sm"
               )}>
                 <div className="text-sm">
@@ -77,7 +77,7 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
                           case "tool-invocation":
                             const tool = part.toolInvocation;
                             let friendlyName = tool.toolName;
-                            
+
                             if (tool.toolName === "str_replace_editor") {
                               const args = (tool.args || {}) as any;
                               const fileName = args.path?.split('/').pop() || args.path || 'file';
@@ -161,7 +161,7 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
                 </div>
               </div>
             </div>
-            
+
             {message.role === "user" && (
               <div className="flex-shrink-0">
                 <div className="w-9 h-9 rounded-lg bg-blue-600 shadow-sm flex items-center justify-center">
@@ -171,6 +171,26 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
             )}
           </div>
         ))}
+        {isLoading && (messages.length === 0 || messages[messages.length - 1].role !== "assistant") && (
+          <div className="flex gap-4 justify-start animate-fade-in">
+            <div className="flex-shrink-0">
+              <div className="w-9 h-9 rounded-lg bg-white border border-neutral-200 shadow-sm flex items-center justify-center">
+                <Bot className="h-4.5 w-4.5 text-neutral-700" />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2 max-w-[85%] items-start">
+              <div className="rounded-xl px-4 py-3 bg-white text-neutral-900 border border-neutral-200 shadow-sm">
+                <div className="text-sm">
+                  <div className="flex items-center gap-2 text-neutral-500">
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    <span className="text-sm">Thinking...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
