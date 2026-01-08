@@ -40,14 +40,14 @@ export function MainContent({ user, project }: MainContentProps) {
           <ResizablePanelGroup direction="horizontal" className="h-full">
             {/* Left Panel - Chat */}
             <ResizablePanel defaultSize={35} minSize={25} maxSize={50}>
-              <div className="h-full flex flex-col bg-white">
+              <div className="h-full grid grid-rows-[auto_1fr] bg-white">
                 {/* Chat Header */}
                 <div className="h-14 flex items-center px-6 border-b border-neutral-200/60">
                   <h1 className="text-lg font-semibold text-neutral-900 tracking-tight">React Component Generator</h1>
                 </div>
 
                 {/* Chat Content */}
-                <div className="flex-1 overflow-hidden">
+                <div className="h-full overflow-hidden">
                   <ChatInterface />
                 </div>
               </div>

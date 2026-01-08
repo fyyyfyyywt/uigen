@@ -119,14 +119,14 @@ export function createImportMap(files: Map<string, string>): ImportMapResult {
         path,
         existingFiles
       );
-      
+
       if (error) {
         // Track error for this file
         errors.push({ path, error });
         // Skip processing this file entirely
         continue;
       }
-      
+
       // Normal successful transform
       const blobUrl = createBlobURL(code);
       transformedFiles.set(path, blobUrl);
@@ -135,10 +135,10 @@ export function createImportMap(files: Map<string, string>): ImportMapResult {
       if (missingImports) {
         missingImports.forEach((imp) => {
           // Check if this is a third-party package
-          const isPackage = !imp.startsWith(".") && 
-                            !imp.startsWith("/") && 
-                            !imp.startsWith("@/");
-          
+          const isPackage = !imp.startsWith(".") &&
+            !imp.startsWith("/") &&
+            !imp.startsWith("@/");
+
           if (isPackage) {
             // Add third-party packages directly to import map
             imports[imp] = `https://esm.sh/${imp}`;
@@ -189,7 +189,7 @@ export function createImportMap(files: Map<string, string>): ImportMapResult {
   for (const { from, cssPath } of allCssImports) {
     // Resolve CSS path relative to the importing file
     let resolvedPath = cssPath;
-    
+
     if (cssPath.startsWith("@/")) {
       // @/ alias points to root
       resolvedPath = cssPath.replace("@/", "/");
@@ -216,9 +216,9 @@ export function createImportMap(files: Map<string, string>): ImportMapResult {
     }
 
     // Check if this is a third-party package (no relative path indicators)
-    const isPackage = !importPath.startsWith(".") && 
-                      !importPath.startsWith("/") && 
-                      !importPath.startsWith("@/");
+    const isPackage = !importPath.startsWith(".") &&
+      !importPath.startsWith("/") &&
+      !importPath.startsWith("@/");
 
     if (isPackage) {
       // Handle third-party packages from esm.sh
@@ -278,7 +278,7 @@ export function createImportMap(files: Map<string, string>): ImportMapResult {
 function resolveRelativePath(fromDir: string, relativePath: string): string {
   const parts = fromDir.split("/").filter(Boolean);
   const relParts = relativePath.split("/");
-  
+
   for (const part of relParts) {
     if (part === "..") {
       parts.pop();
@@ -286,7 +286,7 @@ function resolveRelativePath(fromDir: string, relativePath: string): string {
       parts.push(part);
     }
   }
-  
+
   return "/" + parts.join("/");
 }
 
@@ -319,10 +319,19 @@ export function createPreviewHTML(
       margin: 0;
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-    #root {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       width: 100vw;
       height: 100vh;
+      background-color: #f9fafb; /* bg-gray-50 */
+    }
+    #root {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .error-boundary {
       color: red;
@@ -386,6 +395,24 @@ export function createPreviewHTML(
   <script type="importmap">
     ${importMap}
   </script>
+  <script>
+    // Intercept anchor clicks to prevent breaking the preview iframe
+    document.addEventListener('click', (e) => {
+      // Find the closest anchor tag
+      const link = e.target.closest('a');
+      
+      if (link) {
+        // Prevent ALL link navigation
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        console.log('Link click intercepted and blocked:', link.getAttribute('href'));
+        
+        // Return false to kill any other handlers attached inline
+        return false;
+      }
+    }, true); // Use capture phase to catch it first
+  </script>
 </head>
 <body>
   ${errors.length > 0 ? `
@@ -397,11 +424,11 @@ export function createPreviewHTML(
         Syntax Error${errors.length > 1 ? 's' : ''} (${errors.length})
       </h3>
       ${errors.map(e => {
-        const locationMatch = e.error.match(/\((\d+:\d+)\)/);
-        const location = locationMatch ? locationMatch[1] : '';
-        const cleanError = e.error.replace(/\(\d+:\d+\)/, '').trim();
-        
-        return `
+    const locationMatch = e.error.match(/\((\d+:\d+)\)/);
+    const location = locationMatch ? locationMatch[1] : '';
+    const cleanError = e.error.replace(/\(\d+:\d+\)/, '').trim();
+
+    return `
         <div class="error-item">
           <div class="error-path">
             ${e.path}
@@ -410,7 +437,7 @@ export function createPreviewHTML(
           <div class="error-message">${cleanError.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
         </div>
       `;
-      }).join('')}
+  }).join('')}
     </div>
   ` : ''}
   <div id="root"></div>

@@ -36,9 +36,13 @@ export async function POST(req: Request) {
   let editCount = 0;
   const MAX_EDITS = 3;
 
+  const filteredMessagesForModel = messages.filter(
+    (m) => m.content || m.tool_calls
+  );
+
   const result = streamText({
     model,
-    messages,
+    messages: filteredMessagesForModel,
     maxTokens: 10_000,
     maxSteps: isMockProvider ? 4 : 40,
     onError: (err: any) => {
@@ -110,10 +114,13 @@ export async function POST(req: Request) {
           // Get the messages from the response
           const responseMessages = response.messages || [];
           // Combine original messages with response messages
-          const allMessages = appendResponseMessages({
-            messages: [...messages.filter((m) => m.role !== "system")],
-            responseMessages,
-          });
+  const filteredMessages = messages.filter(
+    (m) => m.role !== "system" && (m.content || m.tool_calls)
+  );
+  const allMessages = appendResponseMessages({
+    messages: [...filteredMessages],
+    responseMessages,
+  });
 
           await prisma.project.update({
             where: {
