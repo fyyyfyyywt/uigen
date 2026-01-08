@@ -1,11 +1,11 @@
-import { anthropic } from "@ai-sdk/anthropic";
+import { google } from "@ai-sdk/google";
 import {
   LanguageModelV1,
   LanguageModelV1StreamPart,
   LanguageModelV1Message,
 } from "@ai-sdk/provider";
 
-const MODEL = "claude-haiku-4-5";
+const MODEL = "gemini-2.0-flash-001";
 
 export class MockLanguageModel implements LanguageModelV1 {
   readonly specificationVersion = "v1" as const;
@@ -507,12 +507,12 @@ export default function App() {
 }
 
 export function getLanguageModel() {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
 
   if (!apiKey || apiKey.trim() === "") {
-    console.log("No ANTHROPIC_API_KEY found, using mock provider");
-    return new MockLanguageModel("mock-claude-sonnet-4-0");
+    console.log("No GOOGLE_GENERATIVE_AI_API_KEY found, using mock provider");
+    return new MockLanguageModel("mock-gemini-2.0-flash-001");
   }
 
-  return anthropic(MODEL);
+  return google(MODEL);
 }
