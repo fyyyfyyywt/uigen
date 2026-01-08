@@ -11,6 +11,8 @@ interface MessageListProps {
 }
 
 export function MessageList({ messages, isLoading }: MessageListProps) {
+  const seenFiles = new Set<string>();
+
   if (messages.length === 0) {
     return (
       <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
@@ -83,16 +85,21 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
                               const fileName = args.path?.split('/').pop() || args.path || 'file';
                               switch (args.command) {
                                 case "create":
-                                  friendlyName = `Creating ${fileName}`;
+                                  if (seenFiles.has(fileName)) {
+                                    friendlyName = `Refining ${fileName}...`;
+                                  } else {
+                                    friendlyName = `Drafting ${fileName}...`;
+                                    seenFiles.add(fileName);
+                                  }
                                   break;
                                 case "str_replace":
-                                  friendlyName = `Updating ${fileName}`;
+                                  friendlyName = `Refining ${fileName}...`;
                                   break;
                                 case "insert":
-                                  friendlyName = `Modifying ${fileName}`;
+                                  friendlyName = `Applying changes to ${fileName}...`;
                                   break;
                                 case "view":
-                                  friendlyName = `Reading ${fileName}`;
+                                  friendlyName = `Reading ${fileName}...`;
                                   break;
                               }
                             } else if (tool.toolName === "file_manager") {
@@ -100,10 +107,10 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
                               const fileName = args.path?.split('/').pop() || args.path || 'file';
                               switch (args.command) {
                                 case "delete":
-                                  friendlyName = `Deleting ${fileName}`;
+                                  friendlyName = `Removing ${fileName}...`;
                                   break;
                                 case "rename":
-                                  friendlyName = `Renaming ${fileName}`;
+                                  friendlyName = `Renaming ${fileName}...`;
                                   break;
                               }
                             }
