@@ -79,7 +79,7 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
                             let friendlyName = tool.toolName;
                             
                             if (tool.toolName === "str_replace_editor") {
-                              const args = tool.args as any;
+                              const args = (tool.args || {}) as any;
                               const fileName = args.path?.split('/').pop() || args.path || 'file';
                               switch (args.command) {
                                 case "create":
@@ -96,7 +96,7 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
                                   break;
                               }
                             } else if (tool.toolName === "file_manager") {
-                              const args = tool.args as any;
+                              const args = (tool.args || {}) as any;
                               const fileName = args.path?.split('/').pop() || args.path || 'file';
                               switch (args.command) {
                                 case "delete":

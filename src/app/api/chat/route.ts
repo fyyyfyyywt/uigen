@@ -34,7 +34,7 @@ export async function POST(req: Request) {
     maxTokens: 10_000,
     maxSteps: isMockProvider ? 4 : 40,
     onError: (err: any) => {
-      console.error(err);
+      console.error("Stream error:", err);
     },
     tools: {
       str_replace_editor: buildStrReplaceTool(fileSystem),

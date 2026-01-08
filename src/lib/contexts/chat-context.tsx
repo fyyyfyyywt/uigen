@@ -6,7 +6,7 @@ import {
   ReactNode,
   useEffect,
 } from "react";
-import { useChat as useAIChat } from "@ai-sdk/react";
+import { useChat as useAIChat } from "ai/react";
 import { Message } from "ai";
 import { useFileSystem } from "./file-system-context";
 import { setHasAnonWork } from "@/lib/anon-work-tracker";
