@@ -63,7 +63,7 @@ export async function POST(req: Request) {
             }
 
             editCount++;
-            
+
             // Execute the file creation first
             const toolResult = await baseEditorTool.execute(args);
 
@@ -75,24 +75,24 @@ export async function POST(req: Request) {
             // Call the Critic Agent with timeout
             try {
               // Create a timeout promise
-              const timeoutPromise = new Promise((_, reject) => 
+              const timeoutPromise = new Promise((_, reject) =>
                 setTimeout(() => reject(new Error("Review timeout")), 15000)
               );
-              
+
               const reviewPromise = reviewCode(args.file_text || "", userRequest as string);
-              
+
               // Use Promise.race to enforce timeout
               const review = await Promise.race([reviewPromise, timeoutPromise]) as any;
-              
+
               if (review.approved) {
-                 return `${toolResult}\n\nReviewer Score: ${review.score}/10 (Approved). Feedback: ${review.feedback}. \nGreat job! You can stop now.`;
+                return `${toolResult}\n\nReviewer Score: ${review.score}/10 (Approved). Feedback: ${review.feedback}. \nGreat job! You can stop now.`;
               } else {
-                 return `${toolResult}\n\nReviewer Score: ${review.score}/10 (Needs Improvement). Feedback: ${review.feedback}. \nPlease refine the code to address this feedback.`;
+                return `${toolResult}\n\nReviewer Score: ${review.score}/10 (Needs Improvement). Feedback: ${review.feedback}. \nPlease refine the code to address this feedback.`;
               }
             } catch (error) {
-               console.error("Critic Agent failed or timed out:", error);
-               // Return success even if critic fails, so we don't block the flow
-               return toolResult;
+              console.error("Critic Agent failed or timed out:", error);
+              // Return success even if critic fails, so we don't block the flow
+              return toolResult;
             }
           }
           return baseEditorTool.execute(args);
@@ -114,13 +114,13 @@ export async function POST(req: Request) {
           // Get the messages from the response
           const responseMessages = response.messages || [];
           // Combine original messages with response messages
-  const filteredMessages = messages.filter(
-    (m) => m.role !== "system" && (m.content || m.tool_calls)
-  );
-  const allMessages = appendResponseMessages({
-    messages: [...filteredMessages],
-    responseMessages,
-  });
+          const filteredMessages = messages.filter(
+            (m) => m.role !== "system" && (m.content || m.tool_calls)
+          );
+          const allMessages = appendResponseMessages({
+            messages: [...filteredMessages],
+            responseMessages,
+          });
 
           await prisma.project.update({
             where: {
