@@ -8,6 +8,8 @@ import { getSession } from "@/lib/auth";
 import { getLanguageModel } from "@/lib/provider";
 import { generationPrompt } from "@/lib/prompts/generation";
 
+import { reviewCode } from "@/lib/agents/code-reviewer";
+
 export async function POST(req: Request) {
   const {
     messages,
@@ -28,6 +30,12 @@ export async function POST(req: Request) {
   const model = getLanguageModel();
   // Use fewer steps for mock provider to prevent repetition
   const isMockProvider = !process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+
+  // Custom tool wrapper to enforce limits and safety
+  const baseEditorTool = buildStrReplaceTool(fileSystem);
+  let editCount = 0;
+  const MAX_EDITS = 3;
+
   const result = streamText({
     model,
     messages,
@@ -37,7 +45,55 @@ export async function POST(req: Request) {
       console.error("Stream error:", err);
     },
     tools: {
-      str_replace_editor: buildStrReplaceTool(fileSystem),
+      str_replace_editor: {
+        description: "A tool for viewing, creating, and editing files. Use 'create' to overwrite entire files.",
+        parameters: baseEditorTool.parameters,
+        execute: async (args: any, context) => {
+          if (args.command === "str_replace") {
+            return "ERROR: The 'str_replace' command is disabled for safety. You MUST use the 'create' command to overwrite the entire file with the new content.";
+          }
+          if (args.command === "create") {
+            // Check limit BEFORE execution to prevent overwriting with hallucinated content
+            if (editCount >= MAX_EDITS) {
+              return `SYSTEM NOTICE: Maximum refinement steps (${MAX_EDITS}) reached. You MUST STOP now. Do not generate any more code.`;
+            }
+
+            editCount++;
+            
+            // Execute the file creation first
+            const toolResult = await baseEditorTool.execute(args);
+
+            // Extract the user prompt to give context to the reviewer
+            // Filter out system messages and get the last user message
+            const lastUserMessage = messages.slice().reverse().find(m => m.role === "user");
+            const userRequest = lastUserMessage?.content || "Create a component";
+
+            // Call the Critic Agent with timeout
+            try {
+              // Create a timeout promise
+              const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error("Review timeout")), 15000)
+              );
+              
+              const reviewPromise = reviewCode(args.file_text || "", userRequest as string);
+              
+              // Use Promise.race to enforce timeout
+              const review = await Promise.race([reviewPromise, timeoutPromise]) as any;
+              
+              if (review.approved) {
+                 return `${toolResult}\n\nReviewer Score: ${review.score}/10 (Approved). Feedback: ${review.feedback}. \nGreat job! You can stop now.`;
+              } else {
+                 return `${toolResult}\n\nReviewer Score: ${review.score}/10 (Needs Improvement). Feedback: ${review.feedback}. \nPlease refine the code to address this feedback.`;
+              }
+            } catch (error) {
+               console.error("Critic Agent failed or timed out:", error);
+               // Return success even if critic fails, so we don't block the flow
+               return toolResult;
+            }
+          }
+          return baseEditorTool.execute(args);
+        },
+      },
       file_manager: buildFileManagerTool(fileSystem),
     },
     onFinish: async ({ response }) => {

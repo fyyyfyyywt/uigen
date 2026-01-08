@@ -507,6 +507,10 @@ export default function App() {
 }
 
 export function getLanguageModel() {
+  return getDesignerModel();
+}
+
+export function getDesignerModel() {
   const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
 
   if (!apiKey || apiKey.trim() === "") {
@@ -516,3 +520,16 @@ export function getLanguageModel() {
 
   return google(MODEL);
 }
+
+export function getCriticModel() {
+  const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+
+  if (!apiKey || apiKey.trim() === "") {
+    return new MockLanguageModel("mock-gemini-2.0-flash-001");
+  }
+
+  // Use a cheaper/faster model for critique if available, otherwise same model
+  // Note: For now using the same model but with strict params in the call site
+  return google("gemini-2.0-flash-001"); 
+}
+
