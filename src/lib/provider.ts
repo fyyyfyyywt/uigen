@@ -5,7 +5,7 @@ import {
   LanguageModelV1Message,
 } from "@ai-sdk/provider";
 
-const MODEL = "gemini-2.0-flash-001";
+const MODEL = "gemini-3-flash-preview";
 
 export class MockLanguageModel implements LanguageModelV1 {
   readonly specificationVersion = "v1" as const;
@@ -515,7 +515,7 @@ export function getDesignerModel() {
 
   if (!apiKey || apiKey.trim() === "") {
     console.log("No GOOGLE_GENERATIVE_AI_API_KEY found, using mock provider");
-    return new MockLanguageModel("mock-gemini-2.0-flash-001");
+    return new MockLanguageModel("mock-gemini-3-flash-preview");
   }
 
   return google(MODEL);
@@ -525,11 +525,11 @@ export function getCriticModel() {
   const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
 
   if (!apiKey || apiKey.trim() === "") {
-    return new MockLanguageModel("mock-gemini-2.0-flash-001");
+    return new MockLanguageModel("mock-gemini-3-flash-preview");
   }
 
   // Use a cheaper/faster model for critique if available, otherwise same model
   // Note: For now using the same model but with strict params in the call site
-  return google("gemini-2.0-flash-001"); 
+  return google("gemini-3-flash-preview");
 }
 
