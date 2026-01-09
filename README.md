@@ -29,7 +29,7 @@ This command will:
 - Generate Prisma client
 - Run database migrations
 
-## Running the Application
+## Running Locally
 
 ### Development
 
@@ -37,7 +37,57 @@ This command will:
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
+Open [http://localhost:3000/uigen](http://localhost:3000/uigen) (Note: `/uigen` path is required)
+
+## Deployment (Self-Hosted)
+
+### Prerequisites
+- Docker & Docker Compose
+- A VPS (e.g., DigitalOcean, Hetzner, etc.)
+- (Optional) A domain name
+
+### 1. Build & Run
+The project includes a `Dockerfile` and `docker-compose.yml` for easy deployment.
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/yourusername/uigen.git
+cd uigen
+
+# 2. Configure Environment
+cp .env.example .env
+nano .env # Add your Google/Anthropic API Keys
+
+# 3. Start
+docker compose up -d --build
+```
+The app will start on port **3000**.
+
+### 2. Reverse Proxy Setup (e.g., Hostinger / Apache)
+If you are hosting this on a VPS but want to access it via a sub-path of your main domain (e.g., `example.com/uigen`) that is hosted elsewhere:
+
+**VPS Side**:
+Ensure `docker-compose.yml` exposes the port:
+```yaml
+ports:
+  - "3000:3000"
+```
+
+**Webhost Side (.htaccess)**:
+Add this to the **TOP** of your `.htaccess` file (before WordPress rules):
+```apache
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+
+# Force HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Proxy /uigen to VPS
+RewriteRule ^uigen(.*)$ http://<YOUR_VPS_IP>:3000/uigen$1 [P,L]
+</IfModule>
+```
 
 ## Usage
 

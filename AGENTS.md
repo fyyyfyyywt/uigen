@@ -112,3 +112,19 @@ This file provides guidance for agentic coding agents working on this repository
 *   **File System**: The project uses a Virtual File System (`src/lib/file-system.ts`) for some operations. Be aware when modifying code related to file generation/management.
 *   **No Reverting**: Do not revert changes unless explicitly asked.
 *   **Safety**: Always verify critical paths before deletion (e.g., `rm -rf`).
+
+## 4. Deployment Awareness
+
+This project is deployed using **Docker** on a VPS, accessed via a **Reverse Proxy** from a separate Webhost.
+
+*   **Base Path**: The application runs under `/uigen`.
+    *   `next.config.ts` has `basePath: "/uigen"`.
+    *   `middleware.ts` expects `/uigen` prefix for protected routes.
+    *   `chat-context.tsx` uses absolute API paths (e.g., `/uigen/api/chat`).
+*   **Access**:
+    *   VPS Port: `3000` (Exposed).
+    *   Public URL: `https://tiancreates.com/uigen`.
+*   **Infrastructure**:
+    *   `docker-compose.yml` orchestrates the App and Redis.
+    *   Hostinger (Apache) handles the Reverse Proxy via `.htaccess`.
+
