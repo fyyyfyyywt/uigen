@@ -6,7 +6,7 @@ export async function middleware(request: NextRequest) {
   const session = await verifySession(request);
 
   // Protected routes that require authentication
-  const protectedPaths = ["/api/projects", "/api/filesystem"];
+  const protectedPaths = ["/uigen/api/projects", "/uigen/api/filesystem"];
   const isProtectedPath = protectedPaths.some((path) =>
     request.nextUrl.pathname.startsWith(path)
   );
