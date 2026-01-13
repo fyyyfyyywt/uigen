@@ -27,7 +27,7 @@ services:
       # Rule: Match uigen.tiancreates.com (Subdomain)
       - "traefik.http.routers.uigen.rule=Host(`uigen.tiancreates.com`)"
       - "traefik.http.routers.uigen.entrypoints=websecure"
-      - "traefik.http.routers.uigen.tls.certresolver=mytlschallenge"
+      - "traefik.http.routers.uigen.tls.certresolver=myresolver"
       # Point to the container port (3000)
       - "traefik.http.services.uigen.loadbalancer.server.port=3000"
 
