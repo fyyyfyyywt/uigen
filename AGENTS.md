@@ -122,7 +122,7 @@ This project is deployed using **Docker** on a VPS, accessed via a **Reverse Pro
     *   `middleware.ts` expects `/uigen` prefix for protected routes.
     *   `chat-context.tsx` uses absolute API paths (e.g., `/uigen/api/chat`).
 *   **Access**:
-    *   VPS Port: `3000` (Exposed).
+    *   VPS Port: `3000` (Internal Only - Routed via Traefik).
     *   Public URL: `https://tiancreates.com/uigen`.
 *   **Infrastructure**:
     *   `docker-compose.yml` orchestrates the App and Redis.

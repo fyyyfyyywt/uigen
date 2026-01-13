@@ -17,7 +17,7 @@ export async function rateLimit(identifier: string): Promise<RateLimitResult> {
     }
 
     const windowMs = 60 * 1000; // 1 minute
-    const limit = 10; // 10 requests per minute per IP
+    const limit = 3; // 10 requests per minute per IP
 
     const now = Date.now();
     const windowStart = now - windowMs;

@@ -1,8 +1,18 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { verifySession } from "@/lib/auth";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function middleware(request: NextRequest) {
+  // Rate Limiting
+  const rateLimitResult = await checkRateLimit();
+  if (!rateLimitResult.success) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      { status: 429 }
+    );
+  }
+
   const session = await verifySession(request);
 
   // Protected routes that require authentication

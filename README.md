@@ -61,17 +61,13 @@ nano .env # Add your Google/Anthropic API Keys
 # 3. Start
 docker compose up -d --build
 ```
-The app will start on port **3000**.
+The app will start on port **3000** (Internal).
 
 ### 2. Reverse Proxy Setup (e.g., Hostinger / Apache)
 If you are hosting this on a VPS but want to access it via a sub-path of your main domain (e.g., `example.com/uigen`) that is hosted elsewhere:
 
 **VPS Side**:
-Ensure `docker-compose.yml` exposes the port:
-```yaml
-ports:
-  - "3000:3000"
-```
+The `docker-compose.yml` uses Traefik labels for routing. Ensure you have a Traefik instance running on the `default` network (or update the network config).
 
 **Webhost Side (.htaccess)**:
 Add this to the **TOP** of your `.htaccess` file (before WordPress rules):
