@@ -40,7 +40,7 @@ export function ChatProvider({
     handleSubmit,
     status,
   } = useAIChat({
-    api: "/uigen/api/chat",
+    api: "/api/chat",
     initialMessages,
     body: {
       files: fileSystem.serialize(),

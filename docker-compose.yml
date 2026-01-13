@@ -24,8 +24,8 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
-      # Rule: Match tiancreates.com AND /uigen prefix
-      - "traefik.http.routers.uigen.rule=Host(`tiancreates.com`) && PathPrefix(`/uigen`)"
+      # Rule: Match uigen.tiancreates.com (Subdomain)
+      - "traefik.http.routers.uigen.rule=Host(`uigen.tiancreates.com`)"
       - "traefik.http.routers.uigen.entrypoints=websecure"
       - "traefik.http.routers.uigen.tls.certresolver=mytlschallenge"
       # Point to the container port (3000)

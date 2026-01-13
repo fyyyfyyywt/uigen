@@ -123,7 +123,7 @@ This project is deployed using **Docker** on a VPS, accessed via a **Reverse Pro
     *   `chat-context.tsx` uses absolute API paths (e.g., `/uigen/api/chat`).
 *   **Access**:
     *   VPS Port: `3000` (Internal Only - Routed via Traefik).
-    *   Public URL: `https://tiancreates.com/uigen`.
+    *   Public URL: `https://uigen.tiancreates.com`.
 *   **Infrastructure**:
     *   `docker-compose.yml` orchestrates the App and Redis.
     *   Hostinger (Apache) handles the Reverse Proxy via `.htaccess`.
