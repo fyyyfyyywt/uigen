@@ -91,8 +91,9 @@ export async function POST(req: Request) {
               }
             } catch (error) {
               console.error("Critic Agent failed or timed out:", error);
-              // Return success even if critic fails, so we don't block the flow
-              return toolResult;
+              // Return success with formatted error message so the model (and user) knows what happened
+              const errorMsg = error instanceof Error ? error.message : String(error);
+              return `${toolResult}\n\nSYSTEM NOTICE: The automated review process timed out or failed (${errorMsg}). \nPlease inform the user that the component was generated but the review step was skipped due to system load.`;
             }
           }
           return baseEditorTool.execute(args);
