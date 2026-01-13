@@ -76,7 +76,7 @@ export async function POST(req: Request) {
             try {
               // Create a timeout promise
               const timeoutPromise = new Promise((_, reject) =>
-                setTimeout(() => reject(new Error("Review timeout")), 15000)
+                setTimeout(() => reject(new Error("Review timeout")), 25000)
               );
 
               const reviewPromise = reviewCode(args.file_text || "", userRequest as string);

@@ -39,6 +39,10 @@ Output strictly in JSON:
   } catch (error) {
     console.error("Review failed:", error);
     // Fallback if review fails to avoid blocking the user
-    return { score: 10, feedback: "Review service unavailable.", approved: true };
+    return {
+      score: 10,
+      feedback: `Review service failed: ${error instanceof Error ? error.message : String(error)}.`,
+      approved: true
+    };
   }
 }
