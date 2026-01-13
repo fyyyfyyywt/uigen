@@ -31,8 +31,7 @@ services:
       # Point to the container port (3000)
       - "traefik.http.services.uigen.loadbalancer.server.port=3000"
       # Streaming & Timeout Configuration (User requested ~30s limit)
-      - "traefik.http.middlewares.uigen-compress.compress=false"
-      - "traefik.http.routers.uigen.middlewares=uigen-compress"
+      # Streaming & Timeout Configuration (User requested ~30s limit)
       # Increase idle/response timeouts to prevent premature drops (35s to cover the 30s logic)
       # Note: Traefik Docker provider labels for low-level transport timeouts are limited. 
       # Usually defaults are OK, but disabling compression handles the 'buffering' issue causing PROTOCOL_ERROR.
