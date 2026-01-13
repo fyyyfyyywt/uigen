@@ -16,12 +16,14 @@ services:
       - uigen-redis
     networks:
       - default
+      - proxy
       # IMPORTANT: You must ensure this network name matches your Traefik network.
       # If your Traefik is in a network called 'web', uncomment below:
       # - web
 
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
       # Rule: Match tiancreates.com AND /uigen prefix
       - "traefik.http.routers.uigen.rule=Host(`tiancreates.com`) && PathPrefix(`/uigen`)"
       - "traefik.http.routers.uigen.entrypoints=websecure"
@@ -45,6 +47,8 @@ volumes:
 networks:
   default:
     driver: bridge
+  proxy:
+    external: true
   # If you need to verify external network connection for Traefik:
   # web:
   #   external: true
